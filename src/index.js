@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const unquote = require('unquote');
 const Transform = require('stream').Transform;
+const Url = require('url');
 
 class CSSRegionRebase extends Transform {
   constructor(options) {
@@ -105,7 +106,13 @@ class CSSRegionRebase extends Transform {
             contentNode = node.first('raw');
           }
 
-          contentNode.content = path.join(nodeRegion.path, unquote(contentNode.content));
+          let contentNodeContent = unquote(contentNode.content);
+
+          let url = Url.parse(contentNodeContent);
+
+          if (!url.host && !path.isAbsolute(contentNodeContent)) {
+            contentNode.content = path.join(nodeRegion.path, unquote(contentNode.content));
+          }
         }
       });
 

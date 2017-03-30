@@ -6,7 +6,7 @@ const through = require('through2');
 const cleanCSS = require('./lib/clean-css');
 
 tap.test('cssRebase', function (test) {
-  test.plan(12);
+  test.plan(13);
 
   test.test('should handle valid region syntax', function (test) {
     let rebaser = new Rebaser();
@@ -376,6 +376,34 @@ tap.test('cssRebase', function (test) {
       })
       .on('error', function (err) {
           test.ok(err);
+
+          test.end();
+        }
+      );
+  });
+
+  test.test('should handle remote and absolute paths', function (test) {
+    let rebaser = new Rebaser();
+
+    let file = path.resolve('test/fixtures/remote-and-absolute/index.css');
+    let data = null;
+
+    fs.createReadStream(file)
+      .pipe(rebaser)
+      .pipe(through(function (chunk, enc, cb) {
+        data = chunk.toString();
+
+        cb();
+      }))
+      .on('finish', function () {
+        fs.readFile(path.resolve('test/fixtures/remote-and-absolute/wanted.css'), function (err, readData) {
+          test.equal(cleanCSS(data), cleanCSS(readData.toString()));
+
+          test.end();
+        });
+      })
+      .on('error', function (err) {
+          test.fail(err);
 
           test.end();
         }
