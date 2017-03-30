@@ -3,8 +3,6 @@ const path = require('path');
 const unquote = require('unquote');
 const Transform = require('stream').Transform;
 const Url = require('url');
-const css = require('css');
-const addIterations = require('css-ast-iterations');
 
 class CSSRegionRebase extends Transform {
   constructor(options) {
@@ -24,22 +22,22 @@ class CSSRegionRebase extends Transform {
 
   /**
    *
-   * @param {{comment: String, position: {start: {line: Number}}}} node
+   * @param {{content: String, start: {line: Number}}} node
    */
   processCommentNode(node) {
-    let regionResult = this.regionRegex.exec(node.comment);
+    let regionResult = this.regionRegex.exec(node.content);
 
     if (regionResult) {
       let path = regionResult[1];
 
       return {
         path: path,
-        start: node.position.start.line,
+        start: node.start.line,
         end: null
       };
     }
 
-    let endRegionResult = this.endRegionRegex.exec(node.comment);
+    let endRegionResult = this.endRegionRegex.exec(node.content);
 
     if (endRegionResult) {
       let path = endRegionResult[1];
@@ -47,7 +45,7 @@ class CSSRegionRebase extends Transform {
       return {
         path: path,
         start: null,
-        end: node.position.start.line
+        end: node.start.line
       };
     }
 
@@ -57,14 +55,14 @@ class CSSRegionRebase extends Transform {
   _transform(chunk, encoding, callback) {
     try {
       let self = this;
-      let urlRegex = /url\(([^,)]+)\)/ig;
-      let parseTree = css.parse(chunk.toString());
 
-      addIterations(parseTree);
+      let parseTree = require('gonzales-pe').parse(chunk.toString(), {
+        syntax: 'css'
+      });
 
       let candidateRegions = new Map();
 
-      parseTree.findAllRulesByType('comment', function (node) {
+      parseTree.traverseByType('multilineComment', function (node) {
         let region = self.processCommentNode(node);
 
         if (region) {
@@ -90,12 +88,11 @@ class CSSRegionRebase extends Transform {
         }
       });
 
-      let processNode = function (node) {
-        let value = node.value;
+      parseTree.traverseByType('uri', function (node) {
         let nodeRegion = null;
 
         regions.forEach(function (region) {
-          if ((region.start <= node.position.start.line) && (region.end >= node.position.start.line)) {
+          if ((region.start <= node.start.line) && (region.end >= node.start.line)) {
             if (!nodeRegion || ((region.start > nodeRegion.start) && (region.end < nodeRegion.end))) {
               nodeRegion = region;
             }
@@ -103,41 +100,23 @@ class CSSRegionRebase extends Transform {
         });
 
         if (nodeRegion) {
-          node.value = value.replace(urlRegex, function (match, url, index, string) {
-            url = unquote(url.trim());
+          let contentNode = node.first('string');
 
-            let urlUrl = Url.parse(url);
+          if (!contentNode) {
+            contentNode = node.first('raw');
+          }
 
-            if (!urlUrl.host && !path.isAbsolute(url)) {
-              url = path.join(nodeRegion.path, url);
-            }
+          let contentNodeContent = unquote(contentNode.content);
 
-            return 'url(' + url + ')';
-          });
+          let url = Url.parse(contentNodeContent);
+
+          if (!url.host && !path.isAbsolute(contentNodeContent)) {
+            contentNode.content = path.join(nodeRegion.path, unquote(contentNode.content));
+          }
         }
-      };
-
-      let nodes = [];
-
-      parseTree.findAllRulesByType('font-face', function (rule) {
-        rule.declarations.forEach(function (node) {
-          nodes.push(node);
-        });
       });
 
-      parseTree.findAllDeclarations(function (node) {
-        if (urlRegex.exec(node.value)) {
-          nodes.push(node);
-        }
-
-        urlRegex.lastIndex = 0;
-      });
-
-      nodes.forEach(function (node) {
-        processNode(node);
-      });
-
-      self.push(css.stringify(parseTree));
+      self.push(parseTree.toString());
 
       callback();
     }
