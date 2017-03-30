@@ -6,7 +6,7 @@ const through = require('through2');
 const cleanCSS = require('./lib/clean-css');
 
 tap.test('cssRebase', function (test) {
-  test.plan(13);
+  test.plan(16);
 
   test.test('should handle valid region syntax', function (test) {
     let rebaser = new Rebaser();
@@ -22,9 +22,11 @@ tap.test('cssRebase', function (test) {
     regionfixtures.forEach(function (fixture) {
       test.test('"' + fixture + '"', function (test) {
         let result = rebaser.processCommentNode({
-          content: fixture,
-          start: {
-            line: 99
+          comment: fixture,
+          position: {
+            start: {
+              line: 99
+            }
           }
         });
 
@@ -49,9 +51,11 @@ tap.test('cssRebase', function (test) {
     endRegionfixtures.forEach(function (fixture) {
       test.test('"' + fixture + '"', function (test) {
         let result = rebaser.processCommentNode({
-          content: fixture,
-          start: {
-            line: 99
+          comment: fixture,
+          position: {
+            start: {
+              line: 99
+            }
           }
         });
 
@@ -80,9 +84,11 @@ tap.test('cssRebase', function (test) {
     regionfixtures.forEach(function (fixture) {
       test.test('"' + fixture + '"', function (test) {
         let result = rebaser.processCommentNode({
-          content: fixture,
-          start: {
-            line: 99
+          comment: fixture,
+          position: {
+            start: {
+              line: 99
+            }
           }
         });
 
@@ -101,9 +107,11 @@ tap.test('cssRebase', function (test) {
     endRegionfixtures.forEach(function (fixture) {
       test.test('"' + fixture + '"', function (test) {
         let result = rebaser.processCommentNode({
-          content: fixture,
-          start: {
-            line: 99
+          comment: fixture,
+          position: {
+            start: {
+              line: 99
+            }
           }
         });
 
@@ -122,9 +130,11 @@ tap.test('cssRebase', function (test) {
     });
 
     let result = rebaser.processCommentNode({
-      content: 'region foo bar',
-      start: {
-        line: 99
+      comment: 'region foo bar',
+      position: {
+        start: {
+          line: 99
+        }
       }
     });
 
@@ -397,6 +407,90 @@ tap.test('cssRebase', function (test) {
       }))
       .on('finish', function () {
         fs.readFile(path.resolve('test/fixtures/remote-and-absolute/wanted.css'), function (err, readData) {
+          test.equal(cleanCSS(data), cleanCSS(readData.toString()));
+
+          test.end();
+        });
+      })
+      .on('error', function (err) {
+          test.fail(err);
+
+          test.end();
+        }
+      );
+  });
+
+  test.test('should handle background', function (test) {
+    let rebaser = new Rebaser();
+
+    let file = path.resolve('test/fixtures/background/index.css');
+    let data = null;
+
+    fs.createReadStream(file)
+      .pipe(rebaser)
+      .pipe(through(function (chunk, enc, cb) {
+        data = chunk.toString();
+
+        cb();
+      }))
+      .on('finish', function () {
+        fs.readFile(path.resolve('test/fixtures/background/wanted.css'), function (err, readData) {
+          test.equal(cleanCSS(data), cleanCSS(readData.toString()));
+
+          test.end();
+        });
+      })
+      .on('error', function (err) {
+          test.fail(err);
+
+          test.end();
+        }
+      );
+  });
+
+  test.test('should handle font-face', function (test) {
+    let rebaser = new Rebaser();
+
+    let file = path.resolve('test/fixtures/font-face/index.css');
+    let data = null;
+
+    fs.createReadStream(file)
+      .pipe(rebaser)
+      .pipe(through(function (chunk, enc, cb) {
+        data = chunk.toString();
+
+        cb();
+      }))
+      .on('finish', function () {
+        fs.readFile(path.resolve('test/fixtures/font-face/wanted.css'), function (err, readData) {
+          test.equal(cleanCSS(data), cleanCSS(readData.toString()));
+
+          test.end();
+        });
+      })
+      .on('error', function (err) {
+          test.fail(err);
+
+          test.end();
+        }
+      );
+  });
+
+  test.test('should handle space in url()', function (test) {
+    let rebaser = new Rebaser();
+
+    let file = path.resolve('test/fixtures/space-in-url/index.css');
+    let data = null;
+
+    fs.createReadStream(file)
+      .pipe(rebaser)
+      .pipe(through(function (chunk, enc, cb) {
+        data = chunk.toString();
+
+        cb();
+      }))
+      .on('finish', function () {
+        fs.readFile(path.resolve('test/fixtures/space-in-url/wanted.css'), function (err, readData) {
           test.equal(cleanCSS(data), cleanCSS(readData.toString()));
 
           test.end();
