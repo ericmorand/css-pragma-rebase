@@ -1,5 +1,0 @@
-/* region cssRebase: foo */
-.foo {
-    background: no-repeat url("./bar") blue;
-}
-/* endregion cssRebase: foo */

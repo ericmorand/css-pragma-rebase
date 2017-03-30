@@ -1,6 +1,5 @@
 /* region foo: foo */
 .foo {
-    color: blue;
     background: url('./bar');
 }
 /* endregion foo: foo */
