@@ -1,0 +1,32 @@
+{
+  "name": "css-region-rebase",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "npm prune && npm update",
+    "test": "tap test/*.js --cov --reporter=spec --100"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericmorand/css-region-rebase.git"
+  },
+  "author": "Eric MORAND",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ericmorand/css-region-rebase/issues"
+  },
+  "homepage": "https://github.com/ericmorand/css-region-rebase#readme",
+  "dependencies": {
+    "gonzales-pe": "^4.0.3",
+    "unquote": "^1.1.0"
+  },
+  "devDependencies": {
+    "clean-css": "^4.0.10",
+    "tap": "^10.3.0",
+    "through2": "^2.0.3"
+  }
+}

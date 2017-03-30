@@ -1,0 +1,33 @@
+.foo {
+    /*region foo:bar*/
+    background: url('.foo');
+    /*endregion foo:bar*/
+
+    /*region foo: bar*/
+    background: url('.foo');
+    /*endregion foo: bar*/
+
+    /*region foo: bar */
+    background: url('.foo');
+    /*endregion foo: bar */
+
+    /* region foo: bar*/
+    background: url('.foo');
+    /* endregion foo: bar*/
+
+    /* region foo: bar */
+    background: url('.foo');
+    /* endregion foo: bar */
+
+    /* region  foo:  bar */
+    background: url('.foo');
+    /* endregion  foo:  bar */
+
+    /* region  foo:  bar */
+    background: url('.foo');
+    /* endregion  foo:  bar */
+
+    /* region  bar:  foo */
+    background: url('.foo');
+    /* endregion  bar:  foo */
+}

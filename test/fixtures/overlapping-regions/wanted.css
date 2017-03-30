@@ -1,0 +1,7 @@
+.foo {
+    background: url(foo/bar);
+}
+
+.bar {
+    background: url(foo/foo);
+}

@@ -1,0 +1,9 @@
+.foo {
+    background: url('./bar');
+}
+/* endregion cssRebase: foo */
+
+/* region cssRebase: bar */
+.bar {
+    background: url('./foo');
+}
