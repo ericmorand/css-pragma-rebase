@@ -1,0 +1,5 @@
+/* region cssRebase: foo */
+@font-face {
+  src: url(./bar), url(./foo) format('woff2'), url("./foo-bar");
+}
+/* endregion cssRebase: foo */

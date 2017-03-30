@@ -1,5 +1,7 @@
 /* region cssRebase: foo */
 .foo {
-  background: url('./bar');
+    color: blue;
+    background: url('./bar');
 }
+
 /* endregion cssRebase: foo */
