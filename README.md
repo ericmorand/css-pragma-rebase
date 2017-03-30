@@ -44,6 +44,14 @@ Optionally pass in some opts:
 
 * opts.format - the format used by your region. Defaults to `cssRebase:`.
 
+## Events
+
+In addition to the usual events emitted by node.js streams, css-region-rebase emits the following events:
+
+### rebaser.on('rebase', function(file) {})
+
+Every time an asset is rebased, this event fires with the rebased path.
+
 ## Contributing
 
 * Fork the main repository

@@ -6,7 +6,7 @@ const through = require('through2');
 const cleanCSS = require('./lib/clean-css');
 
 tap.test('cssRebase', function (test) {
-  test.plan(13);
+  test.plan(14);
 
   test.test('should handle valid region syntax', function (test) {
     let rebaser = new Rebaser();
@@ -406,6 +406,27 @@ tap.test('cssRebase', function (test) {
           test.fail(err);
 
           test.end();
+        }
+      );
+  });
+
+  test.test('should emit "rebase" event', function (test) {
+    let rebaser = new Rebaser();
+
+    let file = path.resolve('test/fixtures/double-quote.css');
+    let rebased = [];
+
+    fs.createReadStream(file)
+      .pipe(rebaser)
+      .on('finish', function () {
+        test.same(rebased.sort(), [
+          'foo/bar'
+        ].sort());
+
+        test.end();
+      })
+      .on('rebase', function (file) {
+          rebased.push(file);
         }
       );
   });

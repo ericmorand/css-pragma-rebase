@@ -112,6 +112,8 @@ class CSSRegionRebase extends Transform {
 
           if (!url.host && !path.isAbsolute(contentNodeContent)) {
             contentNode.content = path.join(nodeRegion.path, unquote(contentNode.content));
+
+            self.emit('rebase', contentNode.content);
           }
         }
       });
