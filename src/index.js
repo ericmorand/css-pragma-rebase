@@ -120,16 +120,20 @@ class CSSRegionRebase extends Transform {
       let nodes = [];
 
       parseTree.findAllRulesByType('font-face', function (rule) {
-        rule.declarations.forEach(function(node) {
+        rule.declarations.forEach(function (node) {
           nodes.push(node);
         });
       });
 
       parseTree.findAllDeclarations(function (node) {
-        nodes.push(node);
+        if (urlRegex.exec(node.value)) {
+          nodes.push(node);
+        }
+
+        urlRegex.lastIndex = 0;
       });
 
-      nodes.forEach(function(node) {
+      nodes.forEach(function (node) {
         processNode(node);
       });
 
