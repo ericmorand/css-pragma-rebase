@@ -1,0 +1,8 @@
+/* region cssRebase: foo */
+@font-face {
+    src: url("./foo.eot"); /* For IE6-8 */
+    src: url("./foo.woff2") format('woff2'),
+    url("./foo.woff") format('woff'),
+    url("./foo.ttf") format('truetype');
+}
+/* endregion cssRebase: foo */

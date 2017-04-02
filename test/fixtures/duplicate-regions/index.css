@@ -1,10 +1,12 @@
+/* region cssRebase: bar */
 /* region cssRebase: foo */
 .foo {
     background: url('./bar');
 }
-/* region cssRebase: bar */
+/* endregion cssRebase: foo */
+/* endregion cssRebase: bar */
+/* region cssRebase: foo */
 .bar {
     background: url('./foo');
 }
-/* endregion cssRebase: bar */
 /* endregion cssRebase: foo */

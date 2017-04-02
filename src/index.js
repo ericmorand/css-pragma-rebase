@@ -60,43 +60,31 @@ class CSSRegionRebase extends Transform {
         syntax: 'css'
       });
 
-      let candidateRegions = new Map();
+      let regions = [];
+      let stack = [];
 
       parseTree.traverseByType('multilineComment', function (node) {
-        let region = self.processCommentNode(node);
+        let nodeRegion = self.processCommentNode(node);
 
-        if (region) {
-          if (region.start) {
-            if (!candidateRegions.has(region.path)) {
-              candidateRegions.set(region.path, region);
-            }
+        if (nodeRegion) {
+          if (nodeRegion.start) {
+            stack.push(nodeRegion);
           }
           else {
-            if (candidateRegions.has(region.path)) {
-              candidateRegions.get(region.path).end = region.end;
+            let region = stack.pop();
+
+            if (region) {
+              region.end = nodeRegion.end;
+
+              regions.push(region);
             }
           }
-        }
-      });
-
-      // clean regions
-      let regions = [];
-
-      candidateRegions.forEach(function (region) {
-        if (region.start && region.end) {
-          regions.push(region);
         }
       });
 
       parseTree.traverseByType('uri', function (node) {
-        let nodeRegion = null;
-
-        regions.forEach(function (region) {
-          if ((region.start <= node.start.line) && (region.end >= node.start.line)) {
-            if (!nodeRegion || ((region.start > nodeRegion.start) && (region.end < nodeRegion.end))) {
-              nodeRegion = region;
-            }
-          }
+        let nodeRegion = regions.find(function (region) {
+          return ((region.start <= node.start.line) && (region.end >= node.start.line));
         });
 
         if (nodeRegion) {
